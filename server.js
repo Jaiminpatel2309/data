@@ -208,7 +208,7 @@ app.post('/api/Lifestyle', async (req, res) => {
   }
 });
 
-app.delete('/api/Lifestyle/:id', async (req, res) => {
+app.delete('/api/Lifestyle/', async (req, res) => {
   const id = req.params.id;
 
   try {
