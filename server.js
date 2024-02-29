@@ -111,7 +111,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mailto: mongoose.connect('mongodb+srv://jp3520278:ypz35uriz0pgnt1h@cluster0.9d7rn9y.mongodb.net/test?retryWrites=true&w=majority');
+mailto: mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle?retryWrites=true&w=majority');
 
 // Define Lifestyle schema
 const LifestyleSchema = new mongoose.Schema({
