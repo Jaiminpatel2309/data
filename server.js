@@ -11,10 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://jp3520278:nENeufw5j8IUnM4t@cluster0.7eq2lbn.mongodb.net/', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/test?retryWrites=true&w=majority');
 
 // Define Property schema
 const propertySchema = new mongoose.Schema({
