@@ -46,7 +46,7 @@ const Property = mongoose.model('Property', propertySchema);
 app.get('/api/properties', async (req, res) => {
   try {
     const properties = await Property.find();
-    res.json(Retro);
+    res.json(properties);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
