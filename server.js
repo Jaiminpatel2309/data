@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/test?retryWrites=true&w=majority');
 
 // Define Property schema
-const propertySchema = new mongoose.Schema({
+const LifestyleSchema = new mongoose.Schema({
   name: String,
   type: {
     type: [String],
@@ -40,24 +40,24 @@ const propertySchema = new mongoose.Schema({
   description: String,
 });
 
-const Property = mongoose.model('Property', propertySchema);
+const Lifestyle = mongoose.model('Lifestyle', LifestyleSchema);
 
 // API endpoints
-app.get('/api/properties', async (req, res) => {
+app.get('/api/Lifestyle', async (req, res) => {
   try {
-    const properties = await Property.find();
-    res.json(properties);
+    const Lifestyle= await Lifestyle.find();
+    res.json(Lifestyle);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-app.post('/api/properties', async (req, res) => {
-  const property = new Property(req.body);
+app.post('/api/Lifestyle', async (req, res) => {
+  const Lifestyle = new Lifestyle(req.body);
 
   try {
-    const newProperty = await property.save();
-    res.status(201).json(newProperty);
+    const newLifestyle = await Lifestyle.save();
+    res.status(201).json(newLifestyle);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -66,28 +66,28 @@ app.post('/api/properties', async (req, res) => {
 // Add the POST request code here or in any appropriate route handler
 
 // Example code to create a new property
-app.post('/create-property', async (req, res) => {
-  const propertyData = {
-    "name": "Example Property",
+app.post('/create-Lifestyle', async (req, res) => {
+  const LifestyleData = {
+    "name": "Example Lifestyle",
     "type": ["Modern", "Minimalist"],
     "parking": true,
-    "description": "This is an example property with modern and minimalist styles."
+    "description": "This is an example Lifestyle with modern and minimalist styles."
   };
 
   try {
-    const response = await axios.post('/api/properties', propertyData);
+    const response = await axios.post('/api/Lifestyle', LifestyleData);
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-app.delete('/api/properties/:id', async (req, res) => {
+app.delete('/api/Lifestyle/:id', async (req, res) => {
   const id = req.params.id;
 
   try {
-    await Property.findByIdAndDelete(id);
-    res.json({ message: 'Property deleted successfully' });
+    await Lifestyle.findByIdAndDelete(id);
+    res.json({ message: 'Lifestyle deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
