@@ -5,13 +5,13 @@ const cors = require('cors');
 const axios = require('axios'); // Import Axios for making HTTP requests
 
 const app = express();
-const PORT = 5000;
+const PORT = 80;
 
 app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mailto:mongoose.connect('mongodb+srv://jp3520278:nENeufw5j8IUnM4t@cluster0.7eq2lbn.mongodb.net/', {
+mongoose.connect('mongodb+srv://jp3520278:nENeufw5j8IUnM4t@cluster0.7eq2lbn.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -78,7 +78,7 @@ app.post('/create-property', async (req, res) => {
   };
 
   try {
-    const response = await axios.post('http://localhost:5000/api/properties', propertyData);
+    const response = await axios.post('/api/properties', propertyData);
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ message: error.message });
