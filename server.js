@@ -105,52 +105,54 @@ const cors = require('cors');
 const axios = require('axios');
 
 const app = express();
-const PORT = 80;
+const PORT = 3000; // Change the port as needed
 
 app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mailto: mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle');
+mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Error connecting to MongoDB:', err));
 
 // Define Lifestyle schema
-const LifestyleSchema = new mongoose.Schema({
-  roomtype: {type: [String]},
-  product: {type: [String]},
-  angle: {type: [String]},
-  color: {type: [String]},
-  roomLight: {type: [String]},
-  tone: {type: [String]}
+const lifestyleSchema = new mongoose.Schema({
+  roomtype: { type: [String] },
+  product: { type: [String] },
+  angle: { type: [String] },
+  color: { type: [String] },
+  roomLight: { type: [String] },
+  tone: { type: [String] },
+  image: { type: [String] }
+  
 });
 
-const Lifestyle = mongoose.model('Lifestyle', LifestyleSchema);
+const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
-// API endpoints
-app.post('/api/Lifestyle', async (req, res) => {
 
-  // console.log("req",req.body);
+// API endpoints for Lifestyle
+app.post('/api/lifestyle', async (req, res) => {
   const { roomtype, color, tone, product, angle, roomLight } = req.body;
   try {
     const query = {};
     if (roomtype) {
-      query.roomtype = { $in: roomtype }; // Match any document with roomtype included in the provided roomtype array
+      query.roomtype = { $in: roomtype };
     }
-    if (!color) {
-      query.color = { $in: color }; // Match any document with color included in the provided color array
+    if (color) {
+      query.color = { $in: color };
     }
-    if (!tone) {
-      query.tone = { $in: tone }; // Match any document with tone included in the provided tone array
+    if (tone) {
+      query.tone = { $in: tone };
     }
-    if (!product) {
-      query.product = { $in:product }; // Match any document with tone included in the provided tone array
+    if (product) {
+      query.product = { $in: product };
     }
-    if (!angle) {
-      query.angle = { $in: angle }; // Match any document with tone included in the provided tone array
+    if (angle) {
+      query.angle = { $in: angle };
     }
-    if (!roomLight) {
-      query.roomLight = { $in: roomLight }; // Match any document with tone included in the provided tone array
+    if (roomLight) {
+      query.roomLight = { $in: roomLight };
     }
-    // console.log("query",query)
     const lifestyles = await Lifestyle.find(query);
     res.json(lifestyles);
   } catch (error) {
@@ -159,33 +161,30 @@ app.post('/api/Lifestyle', async (req, res) => {
 });
 
 app.post('/api/saveLifestyle', async (req, res) => {
-  const { roomtype, product, angle, color, roomLight, tone } = req.body;
+  const { roomtype, product, angle, color, roomLight, tone,image } = req.body;
 
-  // Create a new Lifestyle document
   const newLifestyle = new Lifestyle({
     roomtype: roomtype,
     product: product,
     angle: angle,
     color: color,
     roomLight: roomLight,
-    tone: tone
+    tone: tone,
+    image:image
   });
 
   try {
-    // Save the new Lifestyle document to the database
     const savedLifestyle = await newLifestyle.save();
-    res.status(201).json(savedLifestyle); // Respond with the saved document
+    res.status(201).json(savedLifestyle);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-// Handle DELETE request from frontend to delete Lifestyle data by ID
 app.delete('/api/deleteLifestyle/:id', async (req, res) => {
   const id = req.params.id;
 
   try {
-    // Find and delete the Lifestyle document by ID
     const deletedLifestyle = await Lifestyle.findByIdAndDelete(id);
     if (!deletedLifestyle) {
       return res.status(404).json({ message: 'Lifestyle not found' });
