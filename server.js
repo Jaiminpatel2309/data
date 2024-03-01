@@ -179,7 +179,7 @@ const LifestyleSchema = new mongoose.Schema({
 const Lifestyle = mongoose.model('Lifestyle', LifestyleSchema);
 
 // API endpoints
-app.get('/api/Lifestyle', async (req, res) => {
+app.post('/api/Lifestyle', async (req, res) => {
   try {
     const lifestyles = await Lifestyle.find();
     res.json(lifestyles);
@@ -188,7 +188,7 @@ app.get('/api/Lifestyle', async (req, res) => {
   }
 });
 
-app.post('/api/Lifestyle', async (req, res) => {
+app.post('/api/saveLifestyle', async (req, res) => {
   const { name, type, angle, color, roomLight, tone } = req.body;
 
   const newLifestyle = new Lifestyle({
