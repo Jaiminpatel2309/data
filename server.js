@@ -153,6 +153,7 @@ app.post('/api/lifestyle', async (req, res) => {
     if (roomLight) {
       query.roomLight = { $in: roomLight };
     }
+    console.log("query",query)
     const lifestyles = await Lifestyle.find(query);
     res.json(lifestyles);
   } catch (error) {
