@@ -111,77 +111,47 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
-mailto: mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle?retryWrites=true&w=majority');
+mailto: mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle');
 
 // Define Lifestyle schema
 const LifestyleSchema = new mongoose.Schema({
-  roomtype: {
-    type: [String],
-    enum: [
-      "Modern",
-      "Scandinavian",
-      "Contemporary",
-      "Eclectic",
-      "Industrial living room",
-      "Minimalist",
-      "Minimalist living room",
-      "Rustic",
-      "Asian",
-      "Country",
-      "Industrial",
-      "Mediterranean",
-      "Midcentury cool",
-      "Retro",
-      "Traditional"
-    ]
-  },
-  product: {
-    type: [String],
-    enum: [
-      "Sofas",
-      "Beds",
-      "Dining Table",
-      "Bookshelves",
-      "Chairs",
-      "Tables",
-      "TV Unit",
-      "Cabinet",
-      "Shoe racks",
-      "Wardrobe",
-      "Coffee Tables",
-      "Recliners",
-      "Sideboards",
-      "Desks",
-      "Garden furniture",
-      "Kids furniture",
-      "Chest of drawers"
-    ]
-
-  },
-  angle: {
-    type: [String],
-    enum: ["Front", "Side", "Top", "Isometric", "Close-up", "Room view"]
-  },
-  color: {
-    type: [String],
-    enum: ["Brown", "Cream", "White", "Grey", "Orange"]
-  },
-  roomLight: {
-    type: [String],
-    enum: ["Bright", "Soft", "Dim", "Natural"]
-  },
-  tone: {
-    type: [String],
-    enum: ["Warm", "Cool", "Neutral"]
-  }
+  roomtype: {type: [String]},
+  product: {type: [String]},
+  angle: {type: [String]},
+  color: {type: [String]},
+  roomLight: {type: [String]},
+  tone: {type: [String]}
 });
 
 const Lifestyle = mongoose.model('Lifestyle', LifestyleSchema);
 
 // API endpoints
 app.post('/api/Lifestyle', async (req, res) => {
+
+  // console.log("req",req.body);
+  const { roomtype, color, tone, product, angle, roomLight } = req.body;
   try {
-    const lifestyles = await Lifestyle.find();
+    const query = {};
+    if (roomtype) {
+      query.roomtype = { $in: roomtype }; // Match any document with roomtype included in the provided roomtype array
+    }
+    if (!color) {
+      query.color = { $in: color }; // Match any document with color included in the provided color array
+    }
+    if (!tone) {
+      query.tone = { $in: tone }; // Match any document with tone included in the provided tone array
+    }
+    if (!product) {
+      query.product = { $in:product }; // Match any document with tone included in the provided tone array
+    }
+    if (!angle) {
+      query.angle = { $in: angle }; // Match any document with tone included in the provided tone array
+    }
+    if (!roomLight) {
+      query.roomLight = { $in: roomLight }; // Match any document with tone included in the provided tone array
+    }
+    // console.log("query",query)
+    const lifestyles = await Lifestyle.find(query);
     res.json(lifestyles);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -189,11 +159,12 @@ app.post('/api/Lifestyle', async (req, res) => {
 });
 
 app.post('/api/saveLifestyle', async (req, res) => {
-  const { name, type, angle, color, roomLight, tone } = req.body;
+  const { roomtype, product, angle, color, roomLight, tone } = req.body;
 
+  // Create a new Lifestyle document
   const newLifestyle = new Lifestyle({
-    name: name,
-    type: type,
+    roomtype: roomtype,
+    product: product,
     angle: angle,
     color: color,
     roomLight: roomLight,
@@ -201,18 +172,24 @@ app.post('/api/saveLifestyle', async (req, res) => {
   });
 
   try {
+    // Save the new Lifestyle document to the database
     const savedLifestyle = await newLifestyle.save();
-    res.status(201).json(savedLifestyle);
+    res.status(201).json(savedLifestyle); // Respond with the saved document
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-app.delete('/api/Lifestyle/', async (req, res) => {
+// Handle DELETE request from frontend to delete Lifestyle data by ID
+app.delete('/api/deleteLifestyle/:id', async (req, res) => {
   const id = req.params.id;
 
   try {
-    await Lifestyle.findByIdAndDelete(id);
+    // Find and delete the Lifestyle document by ID
+    const deletedLifestyle = await Lifestyle.findByIdAndDelete(id);
+    if (!deletedLifestyle) {
+      return res.status(404).json({ message: 'Lifestyle not found' });
+    }
     res.json({ message: 'Lifestyle deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
