@@ -111,6 +111,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
+mongoose.set("strictQuery", false);
 mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Error connecting to MongoDB:', err));
