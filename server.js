@@ -117,7 +117,7 @@ mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mong
 
 // Define Lifestyle schema
 const lifestyleSchema = new mongoose.Schema({
-  roomtype: { type: [String] },
+  roomType: { type: [String] },
   product: { type: [String] },
   angle: { type: [String] },
   color: { type: [String] },
@@ -132,11 +132,11 @@ const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
 // API endpoints for Lifestyle
 app.post('/api/lifestyle', async (req, res) => {
-  const { roomtype, color, tone, product, angle, roomLight } = req.body;
+  const { roomType, color, tone, product, angle, roomLight } = req.body;
   try {
     const query = {};
-    if (roomtype) {
-      query.roomtype = { $in: roomtype };
+    if (roomType) {
+      query.roomType = { $in: roomType };
     }
     if (color) {
       query.color = { $in: color };
@@ -163,10 +163,10 @@ app.post('/api/lifestyle', async (req, res) => {
 });
 
 app.post('/api/saveLifestyle', async (req, res) => {
-  const { roomtype, product, angle, color, roomLight, tone,image } = req.body;
+  const { roomType, product, angle, color, roomLight, tone,image } = req.body;
 
   const newLifestyle = new Lifestyle({
-    roomtype: roomtype,
+    roomType: roomType,
     product: product,
     angle: angle,
     color: color,
