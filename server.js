@@ -137,7 +137,7 @@ app.post('/api/lifestyle', async (req, res) => {
   try {
     const query = {};
     if (roomType) {
-      query.roomType = roomType ;
+      query.roomType = { $in: roomType} ;
     }
     if (color) {
       query.color = { $in: color };
