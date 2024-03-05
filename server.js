@@ -133,7 +133,7 @@ const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
 // API endpoints for Lifestyle
 app.post('/api/lifestyle', async (req, res) => {
-  const { roomType, color, tone, product, angle, roomLight } = req.body;
+  const { roomType} = req.body;
   try {
     const query = {};
     if (roomType) {
