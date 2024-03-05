@@ -110,6 +110,7 @@ const PORT = 3000; // Change the port as needed
 app.use(cors());
 app.use(bodyParser.json());
 
+
 // MongoDB connection
 mongoose.set("strictQuery", false);
 mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -137,7 +138,7 @@ app.post('/api/lifestyle', async (req, res) => {
   try {
     const query = {};
     if (roomType) {
-      query.roomType = { $in: roomType} ;
+      query.roomType = Array.isArray(roomType) ? { $in: roomType} : roomType;
     }
     if (color) {
       query.color = { $in: color };
