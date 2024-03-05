@@ -134,9 +134,19 @@ const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
 // API endpoints for Lifestyle
 app.post('/api/lifestyle', async (req, res) => {
-  const { roomType, color, tone, product, angle, roomLight } = req.body;
+  const { searchBar, roomType, color, tone, product, angle, roomLight } = req.body;
   try {
     const query = {};
+    if (searchBar) {
+      query.$or = [
+        { roomType: { $regex: new RegExp(searchBar, 'i') } },
+        { color: { $regex: new RegExp(searchBar, 'i') } },
+        { tone: { $regex: new RegExp(searchBar, 'i') } },
+        { product: { $regex: new RegExp(searchBar, 'i') } },
+        { angle: { $regex: new RegExp(searchBar, 'i') } },
+        { roomLight: { $regex: new RegExp(searchBar, 'i') } }
+      ];
+    }
     if (roomType) {
       query.roomType = Array.isArray(roomType) ? { $in: roomType} : roomType;
     }
