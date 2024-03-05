@@ -156,9 +156,8 @@ app.post('/api/lifestyle', async (req, res) => {
       query.roomLight = { $in: roomLight };
     }
     query.image = { $ne: [] };
-    console.log("query",query)
     const lifestyles = await Lifestyle.find(query);
-    res.json(lifestyles);
+    res.json(lifestyles); 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
