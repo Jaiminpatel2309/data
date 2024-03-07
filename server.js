@@ -194,7 +194,7 @@ app.post('/api/saveLifestyle', async (req, res) => {
   }
 });
 
-aapp.put('/api/updateLifestyle/:id', async (req, res) => {
+app.put('/api/updateLifestyle/:id', async (req, res) => {
   const id = req.params.id;
   const { roomType, product, angle, color, roomLight, tone, image } = req.body;
 
