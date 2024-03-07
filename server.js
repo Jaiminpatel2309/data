@@ -194,6 +194,32 @@ app.post('/api/saveLifestyle', async (req, res) => {
   }
 });
 
+aapp.put('/api/updateLifestyle/:id', async (req, res) => {
+  const id = req.params.id;
+  const { roomType, product, angle, color, roomLight, tone, image } = req.body;
+
+  try {
+    const updatedLifestyle = await Lifestyle.findByIdAndUpdate(id, {
+      roomType: roomType,
+      product: product,
+      angle: angle,
+      color: color,
+      roomLight: roomLight,
+      tone: tone,
+      image: image
+    }, { new: true });
+
+    if (!updatedLifestyle) {
+      return res.status(404).json({ message: 'Lifestyle not found' });
+    }
+
+    res.json(updatedLifestyle);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 app.delete('/api/deleteLifestyle/:id', async (req, res) => {
   const id = req.params.id;
 
