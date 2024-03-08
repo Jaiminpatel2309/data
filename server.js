@@ -23,8 +23,8 @@ const lifestyleSchema = new mongoose.Schema({
   roomType: { type: [String] },
   product: { type: [String] },
   angle: { type: [String] },
-  productcolor: { type: [String] },
-  roomcolor: { type: [String] },
+  productColor: { type: [String] },
+  roomColor: { type: [String] },
   roomLight: { type: [String] },
   tone: { type: [String] },
   image: { type: [String] }
@@ -36,14 +36,15 @@ const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
 // API endpoints for Lifestyle
 app.post('/api/lifestyle', async (req, res) => {
-  const { searchBar, roomType, productcolor, roomcolor, tone, product, angle, roomLight } = req.body;
+  const { searchBar, roomType, productColor
+    , roomColor, tone, product, angle, roomLight } = req.body;
   try {
     const query = {};
     if (searchBar) {
       query.$or = [
         { roomType: { $regex: new RegExp(searchBar, 'i') } },
-        { productcolor: { $regex: new RegExp(searchBar, 'i') } },
-        { roomcolor: { $regex: new RegExp(searchBar, 'i') } },
+        { productColor: { $regex: new RegExp(searchBar, 'i') } },
+        { roomColor: { $regex: new RegExp(searchBar, 'i') } },
         { tone: { $regex: new RegExp(searchBar, 'i') } },
         { product: { $regex: new RegExp(searchBar, 'i') } },
         { angle: { $regex: new RegExp(searchBar, 'i') } },
@@ -53,11 +54,11 @@ app.post('/api/lifestyle', async (req, res) => {
     if (roomType) {
       query.roomType = Array.isArray(roomType) ? { $in: roomType} : roomType;
     }
-    if (productcolor) {
-      query.productcolor = { $in: productcolor };
+    if (productColor) {
+      query.productColor = { $in: productColor };
     }
-    if (roomcolor) {
-      query.roomcolor = { $in: roomcolor };
+    if (roomColor) {
+      query.roomColor = { $in: roomColor };
     }
     if (tone) {
       query.tone = { $in: tone };
@@ -80,14 +81,14 @@ app.post('/api/lifestyle', async (req, res) => {
 });
 
 app.post('/api/saveLifestyle', async (req, res) => {
-  const { roomType, product, angle, productcolor, roomcolor, roomLight, tone,image } = req.body;
+  const { roomType, product, angle, productColor, roomColor, roomLight, tone,image } = req.body;
 
   const newLifestyle = new Lifestyle({
     roomType: roomType,
     product: product,
     angle: angle,
-    productcolor: productcolor,
-    roomcolor: roomcolor,
+    productColor: productColor,
+    roomColor: roomColor,
     roomLight: roomLight,
     tone: tone,
     image:image
