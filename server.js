@@ -1,102 +1,3 @@
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const bodyParser = require('body-parser');
-// const cors = require('cors');
-// const axios = require('axios'); // Import Axios for making HTTP requests
-
-// const app = express();
-// const PORT = 80;
-
-// app.use(cors());
-// app.use(bodyParser.json());
-
-// // MongoDB connection
-// mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/test?retryWrites=true&w=majority');
-
-// // Define Property schema
-// const LifestyleSchema = new mongoose.Schema({
-//   name: String,
-//   type: {
-//     type: [String],
-//     enum: [
-//       "Modern",
-//       "Scandinavian",
-//       "Contemporary",
-//       "Eclectic",
-//       "Industrial living room",
-//       "Minimalist",
-//       "Minimalist living room",
-//       "Rustic",
-//       "Asian",
-//       "Country",
-//       "Industrial",
-//       "Mediterranean",
-//       "Midcentury cool",
-//       "Retro",
-//       "Traditional"
-//     ]
-//   },
-// });
-
-// const Lifestyle = mongoose.model('Lifestyle', LifestyleSchema);
-
-// // API endpointsapi/Lifes
-// app.get('/tyle', async (req, res) => {
-//   try {
-//     const Lifestyle= await Lifestyle.find();
-//     res.json(Lifestyle);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-// app.post('/api/Lifestyle', async (req, res) => {
-
-//   console.log(req)
-//   // const Lifestyle = new Lifestyle(req.body);
-
-//   try {
-//     const newLifestyle = await Lifestyle.save();
-//     res.status(201).json(newLifestyle);
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// });
-
-// // Add the POST request code here or in any appropriate route handler
-
-// // Example code to create a new property
-// app.post('/create-Lifestyle', async (req, res) => {
-//   const LifestyleData = {
-//     "name": "Example Lifestyle",
-//     "type": ["Modern", "Minimalist"],
-//     "parking": true,
-//     "description": "This is an example Lifestyle with modern and minimalist styles."
-//   };
-
-//   try {
-//     const response = await axios.post('/api/Lifestyle', LifestyleData);
-//     res.json(response.data);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-// app.delete('/api/Lifestyle/:id', async (req, res) => {
-//   const id = req.params.id;
-
-//   try {
-//     await Lifestyle.findByIdAndDelete(id);
-//     res.json({ message: 'Lifestyle deleted successfully' });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
-
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -122,7 +23,8 @@ const lifestyleSchema = new mongoose.Schema({
   roomType: { type: [String] },
   product: { type: [String] },
   angle: { type: [String] },
-  color: { type: [String] },
+  productcolor: { type: [String] },
+  roomcolor: { type: [String] },
   roomLight: { type: [String] },
   tone: { type: [String] },
   image: { type: [String] }
@@ -134,13 +36,14 @@ const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
 // API endpoints for Lifestyle
 app.post('/api/lifestyle', async (req, res) => {
-  const { searchBar, roomType, color, tone, product, angle, roomLight } = req.body;
+  const { searchBar, roomType, productcolor, roomcolor, tone, product, angle, roomLight } = req.body;
   try {
     const query = {};
     if (searchBar) {
       query.$or = [
         { roomType: { $regex: new RegExp(searchBar, 'i') } },
-        { color: { $regex: new RegExp(searchBar, 'i') } },
+        { productcolor: { $regex: new RegExp(searchBar, 'i') } },
+        { roomcolor: { $regex: new RegExp(searchBar, 'i') } },
         { tone: { $regex: new RegExp(searchBar, 'i') } },
         { product: { $regex: new RegExp(searchBar, 'i') } },
         { angle: { $regex: new RegExp(searchBar, 'i') } },
@@ -150,8 +53,11 @@ app.post('/api/lifestyle', async (req, res) => {
     if (roomType) {
       query.roomType = Array.isArray(roomType) ? { $in: roomType} : roomType;
     }
-    if (color) {
-      query.color = { $in: color };
+    if (productcolor) {
+      query.productcolor = { $in: productcolor };
+    }
+    if (roomcolor) {
+      query.roomcolor = { $in: roomcolor };
     }
     if (tone) {
       query.tone = { $in: tone };
@@ -174,13 +80,14 @@ app.post('/api/lifestyle', async (req, res) => {
 });
 
 app.post('/api/saveLifestyle', async (req, res) => {
-  const { roomType, product, angle, color, roomLight, tone,image } = req.body;
+  const { roomType, product, angle, productcolor, roomcolor, roomLight, tone,image } = req.body;
 
   const newLifestyle = new Lifestyle({
     roomType: roomType,
     product: product,
     angle: angle,
-    color: color,
+    productcolor: productcolor,
+    roomcolor: roomcolor,
     roomLight: roomLight,
     tone: tone,
     image:image
