@@ -27,12 +27,35 @@ const lifestyleSchema = new mongoose.Schema({
   roomColor: { type: [String] },
   roomLight: { type: [String] },
   tone: { type: [String] },
-  image: { type: [String] }
-  
-});
+  image: { type: [String] },
+  createdAt: { type: Date, default: Date.now },
+  lastModifiedAt: { type: Date, default: Date.now }
+  });
 
 const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
+
+
+// API endpoint to get all lifestyles sorted by the createdAt field in descending order
+app.get('/api/lifestylesSortedByCreatedAt', async (req, res) => {
+  try {
+    const lifestylesSortedByCreatedAt = await Lifestyle.find().sort({ createdAt: -1 });
+    res.json(lifestylesSortedByCreatedAt);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+// API endpoint to get all lifestyles
+app.get('/api/allLifestyles', async (req, res) => {
+  try {
+    const allLifestyles = await Lifestyle.find();
+    res.json(allLifestyles);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // API endpoints for Lifestyle
 app.post('/api/lifestyle', async (req, res) => {
@@ -95,6 +118,7 @@ app.post('/api/saveLifestyle', async (req, res) => {
   });
 
   try {
+    newLifestyle.createdAt = newLifestyle.lastModifiedAt = Date.now();
     const savedLifestyle = await newLifestyle.save();
     res.status(201).json(savedLifestyle);
   } catch (error) {
