@@ -48,10 +48,19 @@ app.get('/api/lifestylesSortedByCreatedAt', async (req, res) => {
 
 
 // API endpoint to get all lifestyles
-app.get('/api/allLifestyles', async (req, res) => {
+// app.get('/api/allLifestyles', async (req, res) => {
+//   try {
+//     const allLifestyles = await Lifestyle.find();
+//     res.json(allLifestyles);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
+app.get('/api/getLifestyle/:id', async (req, res) => {
   try {
-    const allLifestyles = await Lifestyle.find();
-    res.json(allLifestyles);
+    const lifestyle = await Lifestyle.findById(req.params.id);
+    res.json(lifestyle);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
