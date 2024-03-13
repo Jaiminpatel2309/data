@@ -37,7 +37,8 @@ const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
 
 // API endpoint to get all lifestyles sorted by the createdAt field in descending order
-app.get('/api/lifestylesSortedByCreatedAt', async (req, res) => {
+
+app.get('/api/lifestylesSortedBycreatedAt', async (req, res) => {
   try {
     const lifestylesSortedByCreatedAt = await Lifestyle.find().sort({ createdAt: -1 });
     res.json(lifestylesSortedByCreatedAt);
