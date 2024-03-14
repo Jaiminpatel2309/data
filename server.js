@@ -1,4 +1,3 @@
-
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -30,28 +29,31 @@ const lifestyleSchema = new mongoose.Schema({
   image: { type: [String] },
   createdAt: { type: Date, default: Date.now },
   lastModifiedAt: { type: Date, default: Date.now }
-  });
+});
 
 const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
-
-
-// API endpoint to get all lifestyles sorted by the createdAt field in descending order
-app.get('/api/lifestylesSortedByCreatedAt', async (req, res) => {
-  try {
-    const lifestylesSortedByCreatedAt = await Lifestyle.find().sort({ createdAt: -1 });
-    res.json(lifestylesSortedByCreatedAt);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-
-// API endpoint to get all lifestyles
+// API endpoint to get lifestyles with pagination
 app.get('/api/allLifestyles', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 18;
+
   try {
-    const allLifestyles = await Lifestyle.find();
-    res.json(allLifestyles);
+    const totalDocuments = await Lifestyle.countDocuments();
+    const totalPages = Math.ceil(totalDocuments / limit);
+    const offset = (page - 1) * limit;
+
+    const allLifestyles = await Lifestyle.find()
+      .sort({ createdAt: -1 })
+      .skip(offset)
+      .limit(limit);
+
+    res.json({
+      totalDocuments,
+      totalPages,
+      currentPage: page,
+      lifestyles: allLifestyles
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -59,8 +61,11 @@ app.get('/api/allLifestyles', async (req, res) => {
 
 // API endpoints for Lifestyle
 app.post('/api/lifestyle', async (req, res) => {
-  const { searchBar, roomType, productColor
-    , roomColor, tone, product, angle, roomLight } = req.body;
+  const { searchBar, roomType, productColor, roomColor, tone, product, angle, roomLight } = req.body;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 18;
+  const offset = (page - 1) * limit;
+
   try {
     const query = {};
     if (searchBar) {
@@ -95,16 +100,29 @@ app.post('/api/lifestyle', async (req, res) => {
     if (roomLight) {
       query.roomLight = { $in: roomLight };
     }
+
     query.image = { $ne: [] };
-    const lifestyles = await Lifestyle.find(query);
-    res.json(lifestyles); 
+    
+    const lifestyles = await Lifestyle.find(query)
+      .skip(offset)
+      .limit(limit);
+
+    const totalDocuments = await Lifestyle.countDocuments(query);
+    const totalPages = Math.ceil(totalDocuments / limit);
+
+    res.json({
+      totalDocuments,
+      totalPages,
+      currentPage: page,
+      lifestyles
+    }); 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
 app.post('/api/saveLifestyle', async (req, res) => {
-  const { roomType, product, angle, productColor, roomColor, roomLight, tone,image } = req.body;
+  const { roomType, product, angle, productColor, roomColor, roomLight, tone, image } = req.body;
 
   const newLifestyle = new Lifestyle({
     roomType: roomType,
@@ -118,7 +136,7 @@ app.post('/api/saveLifestyle', async (req, res) => {
   });
 
   try {
-    newLifestyle.createdAt = newLifestyle.lastModifiedAt = Date.now();
+    newLifestyle.createdAt = newLifestyle.lastModifiedAt = Date.now(); 
     const savedLifestyle = await newLifestyle.save();
     res.status(201).json(savedLifestyle);
   } catch (error) {
@@ -157,10 +175,6 @@ app.delete('/api/deleteLifestyle/:id', async (req, res) => {
   }
 });
 
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-
-
