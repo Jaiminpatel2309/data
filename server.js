@@ -1,13 +1,16 @@
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 const PORT = 3000; // Change the port as needed
 
 app.use(cors());
 app.use(bodyParser.json());
+
 
 // MongoDB connection
 mongoose.set("strictQuery", false);
@@ -27,13 +30,37 @@ const lifestyleSchema = new mongoose.Schema({
   image: { type: [String] },
   createdAt: { type: Date, default: Date.now },
   lastModifiedAt: { type: Date, default: Date.now }
-});
+  });
 
 const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
-// API endpoint to get lifestyles with pagination
+
+
+// API endpoint to get all lifestyles sorted by the createdAt field in descending order
+app.get('/api/lifestylesSortedByCreatedAt', async (req, res) => {
+  try {
+    const lifestylesSortedByCreatedAt = await Lifestyle.find().sort({ createdAt: -1 });
+    res.json(lifestylesSortedByCreatedAt);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+// API endpoint to get all lifestyles
+app.get('/api/allLifestyles', async (req, res) => {
+  try {
+    const allLifestyles = await Lifestyle.find();
+    res.json(allLifestyles);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// API endpoints for Lifestyle
 app.post('/api/lifestyle', async (req, res) => {
-  const { page = 1, limit = 9, searchBar, roomType, productColor, roomColor, tone, product, angle, roomLight } = req.body;
+  const { searchBar, roomType, productColor
+    , roomColor, tone, product, angle, roomLight } = req.body;
   try {
     const query = {};
     if (searchBar) {
@@ -69,30 +96,8 @@ app.post('/api/lifestyle', async (req, res) => {
       query.roomLight = { $in: roomLight };
     }
     query.image = { $ne: [] };
-
-    // Count total documents to calculate totalPages
-    const totalItems = await Lifestyle.countDocuments(query);
-    const totalPages = Math.ceil(totalItems / limit);
-
-    // Pagination
-    const lifestyles = await Lifestyle.find(query)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    res.json({ lifestyles, totalPages });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// API endpoints for CRUD operations
-
-// API endpoint to get all lifestyles sorted by the createdAt field in descending order
-app.get('/api/lifestylesSortedByCreatedAt', async (req, res) => {
-  try {
-    const lifestylesSortedByCreatedAt = await Lifestyle.find().sort({ createdAt: -1 });
-    res.json(lifestylesSortedByCreatedAt);
+    const lifestyles = await Lifestyle.find(query);
+    res.json(lifestyles); 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -152,6 +157,10 @@ app.delete('/api/deleteLifestyle/:id', async (req, res) => {
   }
 });
 
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+
