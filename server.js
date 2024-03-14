@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -62,60 +64,44 @@ app.get('/api/allLifestyles', async (req, res) => {
 // API endpoints for Lifestyle
 app.post('/api/lifestyle', async (req, res) => {
   const { searchBar, roomType, productColor, roomColor, tone, product, angle, roomLight } = req.body;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 18;
-  const offset = (page - 1) * limit;
-
   try {
     const query = {};
     if (searchBar) {
-      query.$or = [
-        { roomType: { $regex: new RegExp(searchBar, 'i') } },
-        { productColor: { $regex: new RegExp(searchBar, 'i') } },
-        { roomColor: { $regex: new RegExp(searchBar, 'i') } },
-        { tone: { $regex: new RegExp(searchBar, 'i') } },
-        { product: { $regex: new RegExp(searchBar, 'i') } },
-        { angle: { $regex: new RegExp(searchBar, 'i') } },
-        { roomLight: { $regex: new RegExp(searchBar, 'i') } }
-      ];
-    }
-    if (roomType) {
-      query.roomType = Array.isArray(roomType) ? { $in: roomType} : roomType;
-    }
-    if (productColor) {
-      query.productColor = { $in: productColor };
-    }
-    if (roomColor) {
-      query.roomColor = { $in: roomColor };
-    }
-    if (tone) {
-      query.tone = { $in: tone };
-    }
-    if (product) {
-      query.product = { $in: product };
-    }
-    if (angle) {
-      query.angle = { $in: angle };
-    }
-    if (roomLight) {
-      query.roomLight = { $in: roomLight };
-    }
+            query.$or = [
+              { roomType: { $regex: new RegExp(searchBar, 'i') } },
+              { productColor: { $regex: new RegExp(searchBar, 'i') } },
+              { roomColor: { $regex: new RegExp(searchBar, 'i') } },
+              { tone: { $regex: new RegExp(searchBar, 'i') } },
+              { product: { $regex: new RegExp(searchBar, 'i') } },
+              { angle: { $regex: new RegExp(searchBar, 'i') } },
+              { roomLight: { $regex: new RegExp(searchBar, 'i') } }
+            ];
+          }
+          if (roomType) {
+            query.roomType = Array.isArray(roomType) ? { $in: roomType} : roomType;
+          }
+          if (productColor) {
+            query.productColor = { $in: productColor };
+          }
+          if (roomColor) {
+            query.roomColor = { $in: roomColor };
+          }
+          if (tone) {
+            query.tone = { $in: tone };
+          }
+          if (product) {
+            query.product = { $in: product };
+          }
+          if (angle) {
+            query.angle = { $in: angle };
+          }
+          if (roomLight) {
+            query.roomLight = { $in: roomLight };
+          }
 
     query.image = { $ne: [] };
-    
-    const lifestyles = await Lifestyle.find(query)
-      .skip(offset)
-      .limit(limit);
-
-    const totalDocuments = await Lifestyle.countDocuments(query);
-    const totalPages = Math.ceil(totalDocuments / limit);
-
-    res.json({
-      totalDocuments,
-      totalPages,
-      currentPage: page,
-      lifestyles
-    }); 
+    const lifestyles = await Lifestyle.find(query);
+    res.json(lifestyles); 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
