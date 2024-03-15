@@ -1,4 +1,3 @@
-
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -14,7 +13,7 @@ app.use(bodyParser.json());
 
 // MongoDB connection
 mongoose.set("strictQuery", false);
-mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle', { useNewUrlParser: true, useUnifiedTopology: true })
+ mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Error connecting to MongoDB:', err));
 
@@ -30,68 +29,74 @@ const lifestyleSchema = new mongoose.Schema({
   image: { type: [String] },
   createdAt: { type: Date, default: Date.now },
   lastModifiedAt: { type: Date, default: Date.now }
-  });
+});
 
 const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
-// API endpoint to get all lifestyles
-app.get('/api/allLifestyles', async (req, res) => {
-  try {
-    const allLifestyles = await Lifestyle.find();
-    res.json(allLifestyles);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+// API endpoint to get lifestyles with pagination
+app.get('/api/lifestyle', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 18;
 
-// API endpoint to get all lifestyles in decreasing order based on a field (e.g., createdAt)
-app.get('/api/allLifestyles', async (req, res) => {
   try {
-    const allLifestyles = await Lifestyle.find().sort({ createdAt: -1 }); // Change 'createdAt' to the field you want to use
-    res.json(allLifestyles);
+    const totalDocuments = await Lifestyle.countDocuments();
+    const totalPages = Math.ceil(totalDocuments / limit);
+    const offset = (page - 1) * limit;
+
+    const lifestyle = await Lifestyle.find()
+      .sort({ createdAt: -1 })
+      .skip(offset)
+      .limit(limit);
+
+    res.json({
+      totalDocuments,
+      totalPages,
+      currentPage: page,
+      lifestyles: lifestyle
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
 // API endpoints for Lifestyle
-app.post('/api/lifestyle', async (req, res) => {
-  const { searchBar, roomType, productColor
-    , roomColor, tone, product, angle, roomLight } = req.body;
+app.post('/api/lifestyleold', async (req, res) => {
+  const { searchBar, roomType, productColor, roomColor, tone, product, angle, roomLight } = req.body;
   try {
     const query = {};
     if (searchBar) {
-      query.$or = [
-        { roomType: { $regex: new RegExp(searchBar, 'i') } },
-        { productColor: { $regex: new RegExp(searchBar, 'i') } },
-        { roomColor: { $regex: new RegExp(searchBar, 'i') } },
-        { tone: { $regex: new RegExp(searchBar, 'i') } },
-        { product: { $regex: new RegExp(searchBar, 'i') } },
-        { angle: { $regex: new RegExp(searchBar, 'i') } },
-        { roomLight: { $regex: new RegExp(searchBar, 'i') } }
-      ];
-    }
-    if (roomType) {
-      query.roomType = Array.isArray(roomType) ? { $in: roomType} : roomType;
-    }
-    if (productColor) {
-      query.productColor = { $in: productColor };
-    }
-    if (roomColor) {
-      query.roomColor = { $in: roomColor };
-    }
-    if (tone) {
-      query.tone = { $in: tone };
-    }
-    if (product) {
-      query.product = { $in: product };
-    }
-    if (angle) {
-      query.angle = { $in: angle };
-    }
-    if (roomLight) {
-      query.roomLight = { $in: roomLight };
-    }
+            query.$or = [
+              { roomType: { $regex: new RegExp(searchBar, 'i') } },
+              { productColor: { $regex: new RegExp(searchBar, 'i') } },
+              { roomColor: { $regex: new RegExp(searchBar, 'i') } },
+              { tone: { $regex: new RegExp(searchBar, 'i') } },
+              { product: { $regex: new RegExp(searchBar, 'i') } },
+              { angle: { $regex: new RegExp(searchBar, 'i') } },
+              { roomLight: { $regex: new RegExp(searchBar, 'i') } }
+            ];
+          }
+          if (roomType) {
+            query.roomType = Array.isArray(roomType) ? { $in: roomType} : roomType;
+          }
+          if (productColor) {
+            query.productColor = { $in: productColor };
+          }
+          if (roomColor) {
+            query.roomColor = { $in: roomColor };
+          }
+          if (tone) {
+            query.tone = { $in: tone };
+          }
+          if (product) {
+            query.product = { $in: product };
+          }
+          if (angle) {
+            query.angle = { $in: angle };
+          }
+          if (roomLight) {
+            query.roomLight = { $in: roomLight };
+          }
+
     query.image = { $ne: [] };
     const lifestyles = await Lifestyle.find(query);
     res.json(lifestyles); 
@@ -101,7 +106,7 @@ app.post('/api/lifestyle', async (req, res) => {
 });
 
 app.post('/api/saveLifestyle', async (req, res) => {
-  const { roomType, product, angle, productColor, roomColor, roomLight, tone,image } = req.body;
+  const { roomType, product, angle, productColor, roomColor, roomLight, tone, image } = req.body;
 
   const newLifestyle = new Lifestyle({
     roomType: roomType,
