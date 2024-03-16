@@ -40,7 +40,7 @@ app.post('/api/lifestyle', async (req, res
   const page = parseInt(req.body.page) || 1;
   const limit = parseInt(req.body.limit) || 18;
 
-  console.log("page",page,limit)
+  console.log("page 2",page,limit)
 
   try {
     const totalDocuments = await Lifestyle.countDocuments();
