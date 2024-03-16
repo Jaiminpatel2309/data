@@ -34,7 +34,8 @@ const lifestyleSchema = new mongoose.Schema({
 const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
 // API endpoint to get lifestyles with pagination
-app.get('/api/lifestyle', async (req, res) => {
+app.post('/api/lifestyle', async (req, res
+  ) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 18;
 
@@ -163,3 +164,5 @@ app.delete('/api/deleteLifestyle/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
