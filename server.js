@@ -36,8 +36,11 @@ const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 // API endpoint to get lifestyles with pagination
 app.post('/api/lifestyle', async (req, res
   ) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 18;
+    
+  const page = parseInt(req.body.page) || 1;
+  const limit = parseInt(req.body.limit) || 18;
+
+  console.log("page",page,limit)
 
   try {
     const totalDocuments = await Lifestyle.countDocuments();
