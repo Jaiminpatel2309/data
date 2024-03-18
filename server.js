@@ -182,6 +182,14 @@ app.delete('/api/deleteLifestyle/:id', async (req, res) => {
   }
 });
 
+app.get('/api/getLifestyle/:id', async (req, res) => {
+  try {
+    const lifestyle = await Lifestyle.findById(req.params.id);
+    res.json(lifestyle);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
