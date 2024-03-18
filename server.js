@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 // MongoDB connection
 mongoose.set("strictQuery", false);
- mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://jp3520278:yPZ35Uriz0PgnT1h@cluster0.9d7rn9y.mongodb.net/Lifestyle', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Error connecting to MongoDB:', err));
 
@@ -34,13 +34,13 @@ const lifestyleSchema = new mongoose.Schema({
 const Lifestyle = mongoose.model('Lifestyle', lifestyleSchema);
 
 // API endpoint to get lifestyles with pagination
-app.post('/api/lifestyle', async (req, res
-  ) => {
-    
+app.post('/api/lifestyleold', async (req, res
+) => {
+
   const page = parseInt(req.body.page) || 1;
   const limit = parseInt(req.body.limit) || 18;
 
-  console.log("page 2",page,limit)
+  console.log("page 2", page, limit)
 
   try {
     const totalDocuments = await Lifestyle.countDocuments();
@@ -64,46 +64,65 @@ app.post('/api/lifestyle', async (req, res
 });
 
 // API endpoints for Lifestyle
-app.post('/api/lifestyleold', async (req, res) => {
-  const { searchBar, roomType, productColor, roomColor, tone, product, angle, roomLight } = req.body;
+app.post('/api/lifestyle', async (req, res) => {
+  const { searchBar, roomType, productColor, roomColor, tone, product, angle, roomLight, page, limit } = req.body;
+  
+  
+
   try {
     const query = {};
     if (searchBar) {
-            query.$or = [
-              { roomType: { $regex: new RegExp(searchBar, 'i') } },
-              { productColor: { $regex: new RegExp(searchBar, 'i') } },
-              { roomColor: { $regex: new RegExp(searchBar, 'i') } },
-              { tone: { $regex: new RegExp(searchBar, 'i') } },
-              { product: { $regex: new RegExp(searchBar, 'i') } },
-              { angle: { $regex: new RegExp(searchBar, 'i') } },
-              { roomLight: { $regex: new RegExp(searchBar, 'i') } }
-            ];
-          }
-          if (roomType) {
-            query.roomType = Array.isArray(roomType) ? { $in: roomType} : roomType;
-          }
-          if (productColor) {
-            query.productColor = { $in: productColor };
-          }
-          if (roomColor) {
-            query.roomColor = { $in: roomColor };
-          }
-          if (tone) {
-            query.tone = { $in: tone };
-          }
-          if (product) {
-            query.product = { $in: product };
-          }
-          if (angle) {
-            query.angle = { $in: angle };
-          }
-          if (roomLight) {
-            query.roomLight = { $in: roomLight };
-          }
+      query.$or = [
+        { roomType: { $regex: new RegExp(searchBar, 'i') } },
+        { productColor: { $regex: new RegExp(searchBar, 'i') } },
+        { roomColor: { $regex: new RegExp(searchBar, 'i') } },
+        { tone: { $regex: new RegExp(searchBar, 'i') } },
+        { product: { $regex: new RegExp(searchBar, 'i') } },
+        { angle: { $regex: new RegExp(searchBar, 'i') } },
+        { roomLight: { $regex: new RegExp(searchBar, 'i') } }
+      ];
+    }
+    if (roomType) {
+      query.roomType = Array.isArray(roomType) ? { $in: roomType } : roomType;
+    }
+    if (productColor) {
+      query.productColor = { $in: productColor };
+    }
+    if (roomColor) {
+      query.roomColor = { $in: roomColor };
+    }
+    if (tone) {
+      query.tone = { $in: tone };
+    }
+    if (product) {
+      query.product = { $in: product };
+    }
+    if (angle) {
+      query.angle = { $in: angle };
+    }
+    if (roomLight) {
+      query.roomLight = { $in: roomLight };
+    }
 
     query.image = { $ne: [] };
-    const lifestyles = await Lifestyle.find(query);
-    res.json(lifestyles); 
+
+
+  const totalDocuments = await Lifestyle.find(query).count();
+  console.log("totalDocuments",totalDocuments)
+  const totalPages = Math.ceil(totalDocuments / limit);
+  const offset = (page - 1) * limit;
+
+
+    const lifestyles = await Lifestyle.find(query)
+      .sort({ createdAt: -1 })
+      .skip(offset)
+      .limit(limit);
+    res.json({
+      totalDocuments,
+      totalPages,
+      currentPage: page,
+      lifestyles: lifestyles
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -120,11 +139,11 @@ app.post('/api/saveLifestyle', async (req, res) => {
     roomColor: roomColor,
     roomLight: roomLight,
     tone: tone,
-    image:image
+    image: image
   });
 
   try {
-    newLifestyle.createdAt = newLifestyle.lastModifiedAt = Date.now(); 
+    newLifestyle.createdAt = newLifestyle.lastModifiedAt = Date.now();
     const savedLifestyle = await newLifestyle.save();
     res.status(201).json(savedLifestyle);
   } catch (error) {
