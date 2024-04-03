@@ -25,7 +25,6 @@ const lifestyleSchema = new mongoose.Schema({
   productColor: { type: [String] },
   roomColor: { type: [String] },
   roomLight: { type: [String] },
-  tone: { type: [String] },
   image: { type: [String] },
   createdAt: { type: Date, default: Date.now },
   lastModifiedAt: { type: Date, default: Date.now }
@@ -76,7 +75,6 @@ app.post('/api/lifestyle', async (req, res) => {
         { roomType: { $regex: new RegExp(searchBar, 'i') } },
         { productColor: { $regex: new RegExp(searchBar, 'i') } },
         { roomColor: { $regex: new RegExp(searchBar, 'i') } },
-        { tone: { $regex: new RegExp(searchBar, 'i') } },
         { product: { $regex: new RegExp(searchBar, 'i') } },
         { angle: { $regex: new RegExp(searchBar, 'i') } },
         { roomLight: { $regex: new RegExp(searchBar, 'i') } }
@@ -90,9 +88,6 @@ app.post('/api/lifestyle', async (req, res) => {
     }
     if (roomColor) {
       query.roomColor = { $in: roomColor };
-    }
-    if (tone) {
-      query.tone = { $in: tone };
     }
     if (product) {
       query.product = { $in: product };
@@ -138,7 +133,6 @@ app.post('/api/saveLifestyle', async (req, res) => {
     productColor: productColor,
     roomColor: roomColor,
     roomLight: roomLight,
-    tone: tone,
     image: image
   });
 
